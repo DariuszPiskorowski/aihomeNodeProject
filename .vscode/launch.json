@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach to Bridge",
+            "address": "localhost",
+            "port": 9230,
+            "localRoot": "${workspaceFolder}/mqtt_influx_bridge",
+            "remoteRoot": "/usr/src/app"
+            
+        }
+    ]
+}
+// this file is used to configure the debugger to attach to the running node process in Docker

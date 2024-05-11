@@ -1,0 +1,16 @@
+{
+  "name": "mqtt-influx-bridge",
+  "version": "1.0.0",
+  "description": "Bridge between MQTT and InfluxDB",
+  "main": "bridge.js",
+  "dependencies": {
+    "@influxdata/influxdb-client": "^1.33.2",
+    "mqtt": "^4.2.8"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

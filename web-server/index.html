@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MQTT Dashboard</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Font Awesome CDN -->
+    <style>
+        body {
+            background-color: #4D4D4D; 
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .device-container {
+            border: 1px solid #cccccc;
+            margin: 10px;
+            padding: 10px;
+            width: 450px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            background-color: #2B2B2B;
+            border-radius: 3px;
+	    box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer; /* Makes the button visibly clickable */
+        }
+        button.inactive {
+            background-color: lightgray;
+        }
+        button.active {
+            background-color: blue;
+        }
+    </style>
+</head>
+<body>
+    <h1>MQTT Dashboard</h1>
+    <div id="dashboard"></div>
+
+    <script>
+        var socket = io();
+
+       socket.on('deviceRemoved', function(data) {
+           var deviceElement = document.getElementById(data.device);
+           if (deviceElement) {
+               deviceElement.parentNode.removeChild(deviceElement);
+           }
+        });
+
+        socket.on('data', function(data) {
+            const { device, type, id, value } = data;
+            let deviceContainer = document.getElementById(device);
+            if (!deviceContainer) {
+                deviceContainer = document.createElement('div');
+                deviceContainer.id = device;
+                deviceContainer.className = 'device-container';
+                deviceContainer.innerHTML = `<h2>${device}</h2>`;
+                document.getElementById('dashboard').appendChild(deviceContainer);
+            }
+
+              let dataElement = document.getElementById(`${device}-${id}`);
+              if (!dataElement) {
+                dataElement = document.createElement('div');
+                dataElement.id = `${device}-${id}`;
+                const savedName = localStorage.getItem(`${device}-${id}`) || id;
+                dataElement.innerHTML = `<input type="text" class="input-field" placeholder="${type === 'Temperature' ? 'Sensor Name' : 'Relay Name'}" value="${savedName}">`;
+                deviceContainer.appendChild(dataElement);
+
+                const inputField = dataElement.querySelector('.input-field');
+                inputField.addEventListener('input', function() {
+                    localStorage.setItem(`${device}-${id}`, inputField.value);
+                }); 
+
+                if (type === 'Relay') {
+                    const toggleButton = document.createElement('button');
+                    toggleButton.textContent = 'Switch ON/OFF';
+                    dataElement.appendChild(toggleButton);
+                    updateButton(toggleButton, value);
+                } else if (type === 'Temperature') {
+                    const valueSpan = document.createElement('span');
+                    valueSpan.textContent = ` ${value}°C`;
+                    dataElement.appendChild(valueSpan);
+                }
+            } else {
+                const inputField = dataElement.querySelector('.input-field');
+                inputField.value = localStorage.getItem(`${device}-${id}`) || id;
+
+                if (type === 'Relay') {
+                    const toggleButton = dataElement.querySelector('button');
+                    updateButton(toggleButton, value);
+                }
+                if (type === 'Temperature') {
+                    const valueSpan = dataElement.querySelector('span');
+                    valueSpan.textContent = ` ${value}°C`;
+                }
+            }
+        });
+
+        function updateButton(button, value) {
+            button.className = value === 'on' ? 'active' : 'inactive';
+            button.onclick = function() { 
+                const action = value === 'on' ? 'off' : 'on';
+                switchRelay(button.parentElement.id.split('-')[0], button.parentElement.id.split('-')[1], action);
+            };
+        }
+
+
+        function switchRelay(device, id, action) {
+            console.log(`Requesting to switch ${device} ${id} to ${action}`);
+            socket.emit('switchRelay', { device, id, action });
+        }
+
+    </script>
+</body>
+</html>
