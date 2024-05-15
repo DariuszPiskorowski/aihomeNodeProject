@@ -38,6 +38,8 @@ jobs:           # ESLint
         with:
           repository: DariuszPiskorowski/VulnerableApp
           path: vulnerable-app
+      - name: Set execute permission for gradlew
+        run: chmod +x vulnerable-app/gradlew
       - name: Install dependencies
         run: |
           sudo apt-get update
