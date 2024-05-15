@@ -32,25 +32,24 @@ jobs:           # ESLint
 
   owasp-vulnerable-app:          # security software installation and configuration
     runs-on: ubuntu-latest
-    services:
-      owasp-vulnerableapp:
-        image: owasp/vulnerableapp
-        ports:
-          - 9090:9090
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-    - name: Pull OWASP VulnerableApp image
-      run: docker pull owasp/vulnerableapp 
-    - name: Install OWASP Dependency Check
-      run: |
-        wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.1.6/dependency-check-6.1.6-release.zip
-        unzip dependency-check-6.1.6-release.zip
-    - name: Run OWASP Dependency Check
-      run: |
-        ./dependency-check/bin/dependency-check.sh --project "vulnerable-app" --scan . --format "ALL"
+      - name: Checkout VulnerableApp repository
+        uses: actions/checkout@v3
+        with:
+          repository: DariuszPiskorowski/VulnerableApp
+          path: vulnerable-app
+      - name: Set up Docker
+        run: |
+          cd vulnerable-app
+          ./gradlew build
+          docker-compose up -d
+      - name: Install OWASP Dependency Check
+        run: |
+          wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.1.6/dependency-check-6.1.6-release.zip
+          unzip dependency-check-6.1.6-release.zip
+      - name: Run OWASP Dependency Check
+        run: |
+          ./dependency-check/bin/dependency-check.sh --project "vulnerable-app" --scan . --format "ALL"
 
   test:
     needs: [lint, security, owasp-vulnerable-app]  # 
