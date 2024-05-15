@@ -46,10 +46,10 @@ jobs:           # ESLint
           sudo apt-get install -y openjdk-11-jdk
           cd vulnerable-app
           ./gradlew spotlessApply
+          ./gradlew build
       - name: Set up Docker
         run: |
           cd vulnerable-app
-          ./gradlew build
           docker-compose up -d
       - name: Install OWASP Dependency Check
         run: |
