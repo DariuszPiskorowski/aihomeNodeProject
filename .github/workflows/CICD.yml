@@ -16,6 +16,8 @@ jobs:           # ESLint, npm security audit
     - uses: actions/checkout@v3
     - name: Install dependencies
       run: npm install
+    - name: Set execute permission for node_modules/.bin/eslint
+      run: chmod +x node_modules/.bin/eslint
     - name: Run ESLint
       run: npm run lint
 
