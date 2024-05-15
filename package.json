@@ -1,8 +1,21 @@
 {
+  "name": "my-nodejs-app",
+  "version": "1.0.0",
+  "description": "My Node.js Application",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "mocha",
+    "selenium-test": "node selenium-tests.js chrome"
+  },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.33.2",
     "express": "^4.19.2",
     "influx": "^5.9.3",
-    "mqtt": "^5.5.3"
-  }
+    "mqtt": "^5.5.3",
+    "selenium-webdriver": "^4.0.0"
+  },
+  "author": "",
+  "license": "ISC"
 }
+

@@ -3,15 +3,57 @@ name: CI/CD
 on:
   push:
     branches: [ master ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:  # manual trigger
+  schedule:
+    - cron: '0 0 * * 0' # weekly schedule on Sunday at 00:00
 
-jobs:
+jobs:           # ESLint, npm security audit
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: npm install
+    - name: Run ESLint
+      run: npm run lint
+
+  security:     # npm security audit
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: npm install
+    - name: Run security audit
+      run: npm audit --audit-level=moderate
+
+  owasp-vulnerable-app:          # security software installation and configuration
+    runs-on: ubuntu-latest
+    services:
+      owasp-vulnerableapp:
+        image: owasp/vulnerableapp
+        ports:
+          - 9090:9090
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Install OWASP Dependency Check
+      run: |
+        wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.1.6/dependency-check-6.1.6-release.zip
+        unzip dependency-check-6.1.6-release.zip
+    - name: Run OWASP Dependency Check
+      run: |
+        ./dependency-check/bin/dependency-check.sh --project "vulnerable-app" --scan . --format "ALL"
+
   test:
+    needs: [lint, security, owasp-vulnerable-app]  # 
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [18.x, 20.x, 21.x]
+        browser: [chrome, firefox] # popular browsers tests
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
@@ -20,8 +62,15 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install dependencies
       run: npm install
-    - name: Run tests
-      run: npm test
+    - name: Install Selenium WebDriver
+      run: npm install selenium-webdriver
+    - name: Set up Selenium
+      run: |
+        curl -O https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
+        java -jar selenium-server-standalone-3.141.59.jar &
+    - name: Run Selenium tests
+      run: |
+        node selenium-tests.js ${{ matrix.browser }} 
 
   package:
     needs: test
@@ -29,8 +78,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Package Application
-      run: |
-        tar -czvf application-${{ github.sha }}.tar.gz .
+      run: tar -czvf application-${{ github.sha }}.tar.gz .
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
@@ -40,6 +88,7 @@ jobs:
   create-release:
     needs: package
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - name: Create Release
@@ -61,3 +110,16 @@ jobs:
           asset_path: ./application-${{ github.sha }}.tar.gz
           asset_name: application-${{ github.sha }}.tar.gz
           asset_content_type: application/gzip
+
+  docker:
+    needs: [lint, security, test]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Log in to DockerHub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - name: Build Docker image
+      run: docker build -t sonixh/aihome:${{ github.sha }} .
+    - name: Push Docker image
+      run: docker push sonixh/aihome:${{ github.sha }}

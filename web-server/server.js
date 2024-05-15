@@ -13,7 +13,7 @@ const deviceStates = {};
 const deviceTimeouts = {};
 
 // Uwierzytelnianie Basic Auth dla HTTP
-const authUsers = { 'admin': 'atu!3' };
+const authUsers = { 'admin': 'atu!3' };  // USER_LOGIN, USER_PASSWORD
 app.use(basicAuth({
     users: authUsers,
     challenge: true,  // Powoduje wyskoczenie okna dialogowego do logowania

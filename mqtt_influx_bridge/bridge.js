@@ -3,7 +3,7 @@ const { InfluxDB, Point } = require('@influxdata/influxdb-client');
 
 // current config InfluxDB
 const influxDBUrl = 'http://influxdb:8086';
-const token = 'ecfIkGdIqwB-dEoIHT722esCaFnnYYdFN7JNLvsVbEHnZixuRVZOJSuJEq-yTP7qruXdZ99TwVrDZIeI4C1ltw==';
+const token = 'ecfIkGdIqwB-dEoIHT722esCaFnnYYdFN7JNLvsVbEHnZixuRVZOJSuJEq-yTP7qruXdZ99TwVrDZIeI4C1ltw=='; // BRIDGE_TOKEN
 const org = 'ATU';
 const bucket = 'AtuProject';
 
@@ -14,8 +14,8 @@ const clientInflux = new InfluxDB({ url: influxDBUrl, token: token });
 const mqttBrokerUrl = 'mqtt://AIHome.local';
 const options = {
  // clientId: 'influxBridge',
-  username: 'admin',
-  password: 'atu!3'
+  username: 'admin',   // USER_LOGIN
+  password: 'atu!3'    // USER_PASSWORD
 };
 const mqttClient = mqtt.connect(mqttBrokerUrl, options);
 
