@@ -51,14 +51,15 @@ jobs:           # ESLint
         run: |
           cd vulnerable-app
           docker-compose up -d
+
       - name: Install OWASP Dependency Check
         run: |
           wget https://github.com/jeremylong/DependencyCheck/releases/download/v9.2.0/dependency-check-9.2.0-release.zip
           unzip dependency-check-9.2.0-release.zip -d dependency-check
-          chmod +x dependency-check/bin/dependency-check.sh
+          chmod +x dependency-check/dependency-check/bin/dependency-check.sh
       - name: Run OWASP Dependency Check
         run: |
-          ./dependency-check/bin/dependency-check.sh --project "vulnerable-app" --out . --scan ./ --format "ALL" --disableAssembly
+          dependency-check/dependency-check/bin/dependency-check.sh --project "VulnerableApp" --out . --scan ./ --format ALL --disableAssembly
   test:
     needs: [lint, security, owasp-vulnerable-app]  
     runs-on: ubuntu-latest
