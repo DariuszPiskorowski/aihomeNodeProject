@@ -3,6 +3,7 @@ services:
   web-server:
     container_name: my-web-server
     build: ./web-server
+    image: my-web-server:latest   #  added lately
     ports:
       - "2000:2000"  # Web server port
       - "9229:9229"  # Debugging port
@@ -13,7 +14,7 @@ services:
       - influxdb
   mosquitto:
     container_name: mosquitto
-    image: eclipse-mosquitto
+    image: eclipse-mosquitto:latest
     ports:
       - "1883:1883"
     volumes:
@@ -21,7 +22,7 @@ services:
       - ./config/mosquitto_passwd:/mosquitto/config/mosquitto_passwd
 
   influxdb:
-    image: influxdb
+    image: influxdb:latest
     volumes:
       - ./config/influxdb-data:/var/lib/influxdb2
       - ./config/influxdb.conf:/etc/influxdb2/influxdb.conf
@@ -31,6 +32,7 @@ services:
   mqtt_influx_bridge:
     container_name: mqtt-influx-bridge
     build: ./mqtt_influx_bridge
+    image: mqtt-influx-bridge:latest  #  added lately
     ports:
       - "9230:9229" # External port 9230 linked to internal debug port 9229
     depends_on:
