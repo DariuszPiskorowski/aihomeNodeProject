@@ -85,10 +85,10 @@ jobs:           # ESLint
         uses: docker/metadata-action@v4
         with:
           images: |
-            sonixh/aihome-my-web-server
-            sonixh/aihome-mqtt-influx-bridge
-            sonixh/aihome-influxdb
-            sonixh/aihome-mosquitto
+            sonixh/aihome:my-web-server
+            sonixh/aihome:mqtt-influx-bridge
+            sonixh/aihome:influxdb
+            sonixh/aihome:mosquitto
       
       - name: Display files in working directory for debugging
         run: ls -alh
@@ -100,7 +100,7 @@ jobs:           # ESLint
         run: docker images
 
       - name: Login to DockerHub (again)
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker images
         run: docker-compose -f docker-compose.yml push
