@@ -89,6 +89,9 @@ jobs:           # ESLint
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -99,6 +102,7 @@ jobs:           # ESLint
           release_name: Release ${{ github.sha }}
           draft: false
           prerelease: false
+          
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
