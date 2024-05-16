@@ -144,10 +144,16 @@ jobs:           # ESLint
       uses: actions/checkout@v3
     - name: Log in to DockerHub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-    - name: Build and Push Docker image
-      run: docker-compose -f docker-compose.yml up -d --build
-    - name: Tag and Push Docker image
+    - name: Build and Tag Docker images
       run: |
-        docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
-        docker tag aihomenodeproject_my-web-server sonixh/aihome:${{ github.sha }}
-        docker push sonixh/aihome:${{ github.sha }}
+        docker-compose -f docker-compose.yml build
+        docker tag my-nodejs-app_web-server sonixh/my-web-server:${{ github.sha }}
+        docker tag my-nodejs-app_mqtt-influx-bridge sonixh/mqtt-influx-bridge:${{ github.sha }}
+        docker tag my-nodejs-app_mosquitto sonixh/mosquitto:${{ github.sha }}
+        docker tag my-nodejs-app_influxdb sonixh/influxdb:${{ github.sha }}
+    - name: Push Docker images
+      run: |
+        docker push sonixh/my-web-server:${{ github.sha }}
+        docker push sonixh/mqtt-influx-bridge:${{ github.sha }}
+        docker push sonixh/mosquitto:${{ github.sha }}
+        docker push sonixh/influxdb:${{ github.sha }}
