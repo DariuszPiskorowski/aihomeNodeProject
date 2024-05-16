@@ -88,7 +88,7 @@ jobs:           # ESLint
             sonixh/aihome:my-web-server
             sonixh/aihome:mqtt-influx-bridge
             sonixh/aihome:influxdb
-            sonixh/aihome:mosquitto
+            sonixh/aihome:eclipse-mosquitto
       
       - name: Display files in working directory for debugging
         run: ls -alh

@@ -15,7 +15,7 @@ services:
   mosquitto:
     container_name: mosquitto
     build: ./mosquitto
-    image: sonixh/aihome:mosquitto   #  was eclipse-mosquitto
+    image: sonixh/aihome:eclipse-mosquitto   #  was eclipse-mosquitto
     ports:
       - "1883:1883"
     volumes:
