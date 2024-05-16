@@ -72,21 +72,17 @@ jobs:           # ESLint
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-
-    - name: Install rsync
-      run: sudo apt-get install -y rsync
-    - name: Sync files to temp directory
-      run: rsync -av --progress . /tmp/app --exclude '.git' --exclude 'node_modules'  --exclude '.vs' --exclude 'config'
-
-    - name: Display temp directory content for debugging
-      run: ls -alh /tmp/app
-    - name: Package Application
-      run: tar --exclude-vcs --ignore-failed-read -czvf application-${{ github.sha }}.tar.gz . -C /tmp/app .
-    - name: Upload Artifact
+    - name: Archive files
       uses: actions/upload-artifact@v3
       with:
-        name: application-${{ github.run_number }}
-        path: application-${{ github.sha }}.tar.gz
+        name: application-${{ github.sha }}
+        path: |
+          ./*
+        exclude: |
+          **/node_modules
+          **/.git
+          **/.vs
+          **/config
 
   create-release:
     needs: package
