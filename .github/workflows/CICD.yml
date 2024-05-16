@@ -72,10 +72,12 @@ jobs:           # ESLint
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
     - name: Install rsync
       run: sudo apt-get install -y rsync
     - name: Sync files to temp directory
-      run: rsync -av --progress . /tmp/app --exclude '.git' --exclude 'node_modules'
+      run: rsync -av --progress . /tmp/app --exclude '.git' --exclude 'node_modules'  --exclude '.vs' --exclude 'config'
+
     - name: Display temp directory content for debugging
       run: ls -alh /tmp/app
     - name: Package Application
