@@ -145,7 +145,9 @@ jobs:           # ESLint
     - name: Log in to DockerHub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
     - name: Build and Push Docker image
+      run: docker-compose -f docker-compose.yml up -d --build
+    - name: Tag and Push Docker image
       run: |
-        docker-compose -f docker-compose.yml up -d --build
-        docker tag my-web-server sonixh/aihome:${{ github.sha }}
+        docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+        docker tag aihomenodeproject_my-web-server sonixh/aihome:${{ github.sha }}
         docker push sonixh/aihome:${{ github.sha }}
