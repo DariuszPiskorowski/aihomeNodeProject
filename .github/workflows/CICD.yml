@@ -147,13 +147,13 @@ jobs:           # ESLint
     - name: Build and Tag Docker images
       run: |
         docker-compose -f docker-compose.yml build
-        docker tag my-nodejs-app_web-server sonixh/my-web-server:${{ github.sha }}
-        docker tag my-nodejs-app_mqtt-influx-bridge sonixh/mqtt-influx-bridge:${{ github.sha }}
-        docker tag my-nodejs-app_mosquitto sonixh/mosquitto:${{ github.sha }}
-        docker tag my-nodejs-app_influxdb sonixh/influxdb:${{ github.sha }}
+        docker tag my-nodejs-app_web-server sonixh/aihome-nodejs-app:${{ github.sha }}
+        docker tag my-nodejs-app_mqtt-influx-bridge sonixh/aihome-mqtt-influx-bridge:${{ github.sha }}
+        docker tag my-nodejs-app_mosquitto sonixh/aihome-mosquitto:${{ github.sha }}
+        docker tag my-nodejs-app_influxdb sonixh/aihome-influxdb:${{ github.sha }}
     - name: Push Docker images
       run: |
-        docker push sonixh/my-web-server:${{ github.sha }}
-        docker push sonixh/mqtt-influx-bridge:${{ github.sha }}
-        docker push sonixh/mosquitto:${{ github.sha }}
-        docker push sonixh/influxdb:${{ github.sha }}
+        docker push sonixh/aihome-nodejs-app:${{ github.sha }}
+        docker push sonixh/aihome-mqtt-influx-bridge:${{ github.sha }}
+        docker push sonixh/aihome-mosquitto:${{ github.sha }}
+        docker push sonixh/aihome-influxdb:${{ github.sha }}
