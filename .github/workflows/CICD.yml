@@ -146,14 +146,14 @@ jobs:           # ESLint
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
     - name: Build and Tag Docker images
       run: |
-        docker-compose -f docker-compose.yml build
-        docker tag my-nodejs-app_web-server sonixh/aihome-nodejs-app:${{ github.sha }}
-        docker tag my-nodejs-app_mqtt-influx-bridge sonixh/aihome-mqtt-influx-bridge:${{ github.sha }}
-        docker tag my-nodejs-app_mosquitto sonixh/aihome-mosquitto:${{ github.sha }}
-        docker tag my-nodejs-app_influxdb sonixh/aihome-influxdb:${{ github.sha }}
+        docker-compose -f docker-compose.yml up -d build
+        docker tag my-nodejs-app_web-server:latest sonixh/aihome-nodejs-app_web-server:${{ github.sha }}
+        docker tag my-nodejs-app_mqtt-influx-bridge:latest sonixh/aihome-nodejs-app_mqtt-influx-bridge:${{ github.sha }}
+        docker tag influxdb:latest sonixh/aihome-influxdb:${{ github.sha }}
+        docker tag eclipse-mosquitto:latest sonixh/aihome-mosquitto:${{ github.sha }}
     - name: Push Docker images
       run: |
-        docker push sonixh/aihome-nodejs-app:${{ github.sha }}
-        docker push sonixh/aihome-mqtt-influx-bridge:${{ github.sha }}
-        docker push sonixh/aihome-mosquitto:${{ github.sha }}
+        docker push sonixh/aihome-nodejs-app_web-server:${{ github.sha }}
+        docker push sonixh/aihome-nodejs-app_mqtt-influx-bridge:${{ github.sha }}
         docker push sonixh/aihome-influxdb:${{ github.sha }}
+        docker push sonixh/aihome-mosquitto:${{ github.sha }}
