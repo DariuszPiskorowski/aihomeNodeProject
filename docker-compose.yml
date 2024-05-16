@@ -3,7 +3,7 @@ services:
   web-server:
     container_name: my-web-server
     build: ./web-server
-    image: sonixh/aihome:my-web-server   #  added lately
+    image: sonixh/aihome:my-web-server
     ports:
       - "2000:2000"  # Web server port
       - "9229:9229"  # Debugging port
@@ -12,10 +12,10 @@ services:
     depends_on:
       - mosquitto
       - influxdb
+
   mosquitto:
     container_name: mosquitto
-    #build: ./mosquitto
-    image: sonixh/aihome:eclipse-mosquitto   #  was eclipse-mosquitto
+    image: sonixh/aihome:eclipse-mosquitto
     ports:
       - "1883:1883"
     volumes:
@@ -24,8 +24,7 @@ services:
 
   influxdb:
     container_name: influxdb
-    #build: ./influxdb
-    image: sonixh/aihome:influxdb   #  was influxdb
+    image: sonixh/aihome:influxdb
     volumes:
       - ./config/influxdb-data:/var/lib/influxdb2
       - ./config/influxdb.conf:/etc/influxdb2/influxdb.conf
@@ -35,7 +34,7 @@ services:
   mqtt_influx_bridge:
     container_name: mqtt-influx-bridge
     build: ./mqtt_influx_bridge
-    image: sonixh/aihome:mqtt-influx-bridge  #  added lately
+    image: sonixh/aihome:mqtt-influx-bridge
     ports:
       - "9230:9229" # External port 9230 linked to internal debug port 9229
     depends_on:

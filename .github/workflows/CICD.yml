@@ -80,15 +80,12 @@ jobs:           # ESLint
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            sonixh/aihome:my-web-server
-            sonixh/aihome:mqtt-influx-bridge
-            sonixh/aihome:influxdb
-            sonixh/aihome:eclipse-mosquitto
+      - name: Pull and Tag External Images
+        run: |
+            docker pull eclipse-mosquitto
+            docker pull influxdb
+            docker tag influxdb sonixh/aihome:influxdb
+            docker tag eclipse-mosquitto sonixh/aihome:eclipse-mosquitto
       
       - name: Display files in working directory for debugging
         run: ls -alh
@@ -103,4 +100,8 @@ jobs:           # ESLint
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker images
-        run: docker-compose -f docker-compose.yml push
+        run: |
+          docker push sonixh/aihome:my-web-server
+          docker push sonixh/aihome:mqtt-influx-bridge
+          docker push sonixh/aihome:influxdb
+          docker push sonixh/aihome:eclipse-mosquitto
