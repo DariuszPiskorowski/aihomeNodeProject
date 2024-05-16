@@ -14,6 +14,7 @@ services:
       - influxdb
   mosquitto:
     container_name: mosquitto
+    build: ./mosquitto
     image: sonixh/aihome:mosquitto   #  was eclipse-mosquitto
     ports:
       - "1883:1883"
@@ -22,6 +23,8 @@ services:
       - ./config/mosquitto_passwd:/mosquitto/config/mosquitto_passwd
 
   influxdb:
+    container_name: influxdb
+    build: ./influxdb
     image: sonixh/aihome:influxdb   #  was influxdb
     volumes:
       - ./config/influxdb-data:/var/lib/influxdb2
