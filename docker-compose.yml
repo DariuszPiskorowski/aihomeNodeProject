@@ -24,7 +24,7 @@ services:
 
   influxdb:
     container_name: influxdb
-    build: ./influxdb
+    #build: ./influxdb
     image: sonixh/aihome:influxdb   #  was influxdb
     volumes:
       - ./config/influxdb-data:/var/lib/influxdb2
