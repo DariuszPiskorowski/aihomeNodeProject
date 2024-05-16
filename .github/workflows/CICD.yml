@@ -73,7 +73,7 @@ jobs:           # ESLint
     steps:
     - uses: actions/checkout@v3
     - name: Package Application
-      run: tar -czvf application-${{ github.sha }}.tar.gz .
+      run: tar -czvf application-${{ github.sha }}.tar.gz . --ignore-failed-read
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
