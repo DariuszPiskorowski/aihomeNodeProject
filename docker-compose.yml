@@ -14,7 +14,7 @@ services:
       - influxdb
   mosquitto:
     container_name: mosquitto
-    build: ./mosquitto
+    #build: ./mosquitto
     image: sonixh/aihome:eclipse-mosquitto   #  was eclipse-mosquitto
     ports:
       - "1883:1883"
