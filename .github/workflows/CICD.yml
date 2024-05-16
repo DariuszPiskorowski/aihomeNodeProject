@@ -58,12 +58,21 @@ jobs:           # ESLint
           unzip dependency-check-9.2.0-release.zip -d dependency-check
           chmod +x dependency-check/dependency-check/bin/dependency-check.sh
 
+      - name: Cache NVD Data
+        uses: actions/cache@v3
+        with:
+          path: ~/.dependency-check
+          key: ${{ runner.os }}-nvd-data
+          restore-keys: |
+            ${{ runner.os }}-nvd-data
+
       - name: Run OWASP Dependency Check
         run: |
           export NVD_API_KEY=${{ secrets.NVD_API_KEY }}
           dependency-check/dependency-check/bin/dependency-check.sh --project "VulnerableApp" --out . --scan ./ --format "ALL" --disableAssembly --nvdApiKey $NVD_API_KEY
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+
   test:
     needs: [lint, security, owasp-vulnerable-app]  
     runs-on: ubuntu-latest
@@ -135,7 +144,8 @@ jobs:           # ESLint
       uses: actions/checkout@v3
     - name: Log in to DockerHub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-    - name: Build Docker image
-      run: docker build -t sonixh/aihome:${{ github.sha }} .
-    - name: Push Docker image
-      run: docker push sonixh/aihome:${{ github.sha }}
+    - name: Build and Push Docker image
+      run: |
+        docker-compose -f docker-compose.yml up -d --build
+        docker tag my-web-server sonixh/aihome:${{ github.sha }}
+        docker push sonixh/aihome:${{ github.sha }}
