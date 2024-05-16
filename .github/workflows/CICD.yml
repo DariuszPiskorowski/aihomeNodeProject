@@ -61,7 +61,7 @@ jobs:           # ESLint
       - name: Run OWASP Dependency Check
         run: |
           export NVD_API_KEY=${{ secrets.NVD_API_KEY }}
-          dependency-check/dependency-check/bin/dependency-check.sh --project "VulnerableApp" --out . --scan ./ --format ALL --disableAssembly
+          dependency-check/dependency-check/bin/dependency-check.sh --project "VulnerableApp" --out . --scan ./ --format ALL --nvdApiKey $NVD_API_KEY --disableAssembly
   test:
     needs: [lint, security, owasp-vulnerable-app]  
     runs-on: ubuntu-latest
