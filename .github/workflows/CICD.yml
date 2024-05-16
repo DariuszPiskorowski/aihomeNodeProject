@@ -109,34 +109,24 @@ jobs:           # ESLint
     needs: [lint, security, test]
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Log in to DockerHub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and push Docker images
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        push: true
-        tags: |
-          sonixh/aihome-my-web-server:${{ github.sha }}
-          sonixh/aihome-mqtt-influx-bridge:${{ github.sha }}
-          sonixh/aihome-influxdb:${{ github.sha }}
-          sonixh/aihome-mosquitto:${{ github.sha }}
-
-  dependabot:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Enable Dependabot
-        uses: dependabot/dependabot-core@v1
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
         with:
-          directory: '/'
-          package-manager: 'npm_and_yml'
-          update-schedule: 'weekly'
-          target-branch: 'master'  
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build Docker images
+        run: docker-compose -f docker-compose.yml build
+      - name: Tag Docker images
+        run: |
+          docker tag my-nodejs-app_web-server sonixh/aihome-my-web-server:${{ github.sha }}
+          docker tag my-nodejs-app_mqtt-influx-bridge sonixh/aihome-mqtt-influx-bridge:${{ github.sha }}
+          docker tag my-nodejs-app_influxdb sonixh/aihome-influxdb:${{ github.sha }}
+          docker tag my-nodejs-app_mosquitto sonixh/aihome-mosquitto:${{ github.sha }}
+      - name: Push Docker images
+        run: |
+          docker push sonixh/aihome-my-web-server:${{ github.sha }}
+          docker push sonixh/aihome-mqtt-influx-bridge:${{ github.sha }}
+          docker push sonixh/aihome-influxdb:${{ github.sha }}
+          docker push sonixh/aihome-mosquitto:${{ github.sha }}
