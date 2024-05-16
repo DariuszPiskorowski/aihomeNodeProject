@@ -57,8 +57,10 @@ jobs:           # ESLint
           wget https://github.com/jeremylong/DependencyCheck/releases/download/v9.2.0/dependency-check-9.2.0-release.zip
           unzip dependency-check-9.2.0-release.zip -d dependency-check
           chmod +x dependency-check/dependency-check/bin/dependency-check.sh
+
       - name: Run OWASP Dependency Check
         run: |
+          export NVD_API_KEY=${{ secrets.NVD_API_KEY }}
           dependency-check/dependency-check/bin/dependency-check.sh --project "VulnerableApp" --out . --scan ./ --format ALL --disableAssembly
   test:
     needs: [lint, security, owasp-vulnerable-app]  
