@@ -30,7 +30,7 @@ jobs:           # ESLint
     - name: Run security audit
       run: npm audit --audit-level=moderate
 
-    - name: Install Trivy
+    - name: Install Trivy   #  Trivy test for Docker images
       run: |
         sudo apt-get install -y wget apt-transport-https gnupg lsb-release
         wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
@@ -43,12 +43,12 @@ jobs:           # ESLint
 
   
   test:
-    needs: [lint, security]  
+    needs: [lint, security]  # Selenium tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [18.x, 20.x, 21.x]
-        browser: [chrome, firefox] # popular browsers tests
+        browser: [chrome, firefox] # most popular browsers tests
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
@@ -96,7 +96,7 @@ jobs:           # ESLint
       - name: Display Docker images
         run: docker images
 
-      - name: Login to DockerHub (again)
+      - name: Login to DockerHub (again)  # just in case all jobs are take too long
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker images
