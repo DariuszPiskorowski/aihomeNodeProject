@@ -10,18 +10,7 @@ on:
     - cron: '0 0 * * 0' # weekly schedule on Sunday at 00:00
 
 jobs:           
-  notify_start:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Notify Start
-      uses: 8398a7/action-slack@v3
-      with:
-        status: 'custom'
-        fields: job,commit,repo,author,took
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_TEXT: 'CI/CD pipeline started for ${{ github.ref }}'
-
+ 
   code_integrity:   # linting
     runs-on: ubuntu-latest
     steps:
