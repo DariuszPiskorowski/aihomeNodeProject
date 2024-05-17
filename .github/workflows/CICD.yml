@@ -67,7 +67,7 @@ jobs:           # ESLint - code integrity
       run: |
         node selenium-tests.js ${{ matrix.browser }} 
 
-  docker:
+  deploy:
     needs: [lint, security, test]
     runs-on: ubuntu-latest
     steps:
@@ -106,34 +106,4 @@ jobs:           # ESLint - code integrity
           docker push sonixh/aihome:influxdb
           docker push sonixh/aihome:eclipse-mosquitto
 
-  deploy:
-    needs: docker
-    runs-on: ubuntu-latest
-    steps:
-        - name: Install Tailscale
-          run: |
-            curl -fsSL https://tailscale.com/install.sh | sh
-
-        - name: Authenticate Tailscale
-          env:
-            TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
-          run: |
-            tailscale up --authkey $TAILSCALE_AUTHKEY
-
-        - name: Check Tailscale status
-          run: tailscale status
-
-        - name: Ping Tailscale IP
-          run: ping -c 4 100.120.133.102
-          
-        - name: Setup SSH
-          uses: webfactory/ssh-agent@v0.5.3
-          with:
-            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}    
-
-        - name: Deploy to production server
-          env:
-            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-            DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          run: |
-            ssh user@100:120:133:102 'curl -o docker-compose.yml https://raw.githubusercontent.com/DariuszPiskorowski/aihomeNodeProject/master/docker-compose.yml && echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin && docker-compose pull && docker-compose up -d'
+  
