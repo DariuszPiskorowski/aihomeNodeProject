@@ -110,6 +110,27 @@ jobs:           # ESLint - code integrity
     needs: docker
     runs-on: ubuntu-latest
     steps:
+        - name: Install Tailscale
+          run: |
+            curl -fsSL https://tailscale.com/install.sh | sh
+
+        - name: Authenticate Tailscale
+          env:
+            TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+          run: |
+            tailscale up --authkey $TAILSCALE_AUTHKEY
+
+        - name: Check Tailscale status
+          run: tailscale status
+
+        - name: Ping Tailscale IP
+          run: ping -c 4 100.120.133.102
+          
+        - name: Setup SSH
+          uses: webfactory/ssh-agent@v0.5.3
+          with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}    
+
         - name: Deploy to production server
           env:
             DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
