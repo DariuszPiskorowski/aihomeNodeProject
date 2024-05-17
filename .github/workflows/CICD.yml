@@ -9,7 +9,7 @@ on:
   schedule:
     - cron: '0 0 * * 0' # weekly schedule on Sunday at 00:00
 
-jobs:           # ESLint
+jobs:           # ESLint - code integrity
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -105,3 +105,14 @@ jobs:           # ESLint
           docker push sonixh/aihome:mqtt-influx-bridge
           docker push sonixh/aihome:influxdb
           docker push sonixh/aihome:eclipse-mosquitto
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+        - name: Deploy to production server
+          env:
+            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+            DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          run: |
+            ssh user@boss-laptop 'curl -o docker-compose.yml https://raw.githubusercontent.com/DariuszPiskorowski/aihomeNodeProject/master/docker-compose.yml && echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin && docker-compose pull && docker-compose up -d'
