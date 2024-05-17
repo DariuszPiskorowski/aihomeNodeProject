@@ -41,7 +41,7 @@ jobs:
     - name: Scan repository
       run: trivy fs .
   
-  test:
+  test_selenium:
     needs: [code_integrity, security]  # Selenium tests
     runs-on: ubuntu-latest
     strategy:
@@ -67,7 +67,7 @@ jobs:
         node selenium-tests.js ${{ matrix.browser }} 
 
   deployment:
-    needs: [code_integrity, security, test]
+    needs: [code_integrity, security, test_selenium]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -94,6 +94,9 @@ jobs:
 
       - name: Display Docker images
         run: docker images
+
+      - name: Scan images
+        run: trivy fs .
 
       - name: Login to DockerHub (again)  # just in case all jobs are take too long
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
