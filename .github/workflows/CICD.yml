@@ -10,7 +10,6 @@ on:
     - cron: '0 0 * * 0' # weekly schedule on Sunday at 00:00
 
 jobs:           
- 
   code_integrity:   # linting
     runs-on: ubuntu-latest
     steps:
@@ -68,7 +67,7 @@ jobs:
         node selenium-tests.js ${{ matrix.browser }} 
 
   deploy:
-    needs: [lint, security, test]
+    needs: [code_integrity, security, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
