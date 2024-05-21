@@ -21,7 +21,7 @@
             flex-direction: column;
             background-color: #2B2B2B;
             border-radius: 3px;
-	    box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+	        box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
         }
         button {
             margin: 5px;
@@ -38,12 +38,24 @@
         button.active {
             background-color: blue;
         }
+        .clock-container .clock {
+            font-size: 20px;
+            color: #0F0; /* Neon green for visibility */
+            text-align: center;
+            padding: 10px;
+        }
+        
     </style>
 </head>
 <body>
     <h1>MQTT Dashboard</h1>
     <div id="dashboard"></div>
 
+    <div class="device-container clock-container">
+        <h2>System Clock</h2>
+        <div id="clock" class="clock"></div>
+    </div>
+    
     <script>
         var socket = io();
 
@@ -116,7 +128,22 @@
             console.log(`Requesting to switch ${device} ${id} to ${action}`);
             socket.emit('switchRelay', { device, id, action });
         }
-
-    </script>
+        
+        
+            
+            function updateClock() {
+                var now = new Date();
+                var hours = now.getHours();
+                var minutes = now.getMinutes();
+                var seconds = now.getSeconds();
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                var time = hours + ':' + minutes + ':' + seconds;
+                document.getElementById('clock').innerHTML = time;
+            }
+            setInterval(updateClock, 1000);
+            updateClock(); 
+            
+     </script>
 </body>
 </html>

@@ -4,6 +4,6 @@
     "\\mqtt_influx_bridge",
     "\\web-server"
   ],
-  "SelectedNode": "\\web-server\\server.js",
+  "SelectedNode": "\\.github",
   "PreviewInSolutionExplorer": false
 }
