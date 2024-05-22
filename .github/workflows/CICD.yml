@@ -140,7 +140,7 @@ jobs:
           docker push sonixh/aihome:eclipse-mosquitto
 
   package:
-    needs: test
+    needs: [code_integrity, security, test_selenium]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -157,7 +157,7 @@ jobs:
           **/config
         
   create-release:
-    needs: package
+    needs: [package]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
