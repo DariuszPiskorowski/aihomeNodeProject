@@ -168,7 +168,7 @@ jobs:
       id: create_release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ github.sha }}
+        tag_name: release-${{ github.sha }}
         release_name: Release ${{ github.sha }}
         draft: false
         prerelease: false
