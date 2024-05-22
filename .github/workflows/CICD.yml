@@ -139,25 +139,8 @@ jobs:
           docker push sonixh/aihome:influxdb
           docker push sonixh/aihome:eclipse-mosquitto
 
-  package:
-    needs: [code_integrity, security, test_selenium]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Archive files
-      uses: actions/upload-artifact@v3
-      with:
-        name: application-${{ github.sha }}
-        path: |
-          ./*
-        exclude: |
-          **/node_modules
-          **/.git
-          **/.vs
-          **/config
-        
   create-release:
-    needs: [package]
+    needs: [deployment]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
@@ -174,13 +157,3 @@ jobs:
         prerelease: false
       env: 
         GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./application-${{ github.sha }}.tar.gz
-        asset_name: application-${{ github.sha }}.tar.gz
-        asset_content_type: application/gzip
-      env:
-        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  
