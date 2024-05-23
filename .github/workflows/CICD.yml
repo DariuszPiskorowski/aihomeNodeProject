@@ -18,7 +18,7 @@ jobs:
     - name: Set up Node.js ver 20
       uses: actions/setup-node@v3
       with:
-        node-version: 20
+        node-version: '20'
     - name: Cache Node.js modules
       uses: actions/cache@v2
       with:
@@ -41,13 +41,13 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 20
+        node-version: '20'
     - name: Install dependencies
       run: npm install
     - name: Run ESLint
       run: |
         chmod +x node_modules/.bin/eslint
-#        npm run lint
+        #  npm run lint
         node_modules/.bin/eslint src/ --format html --output-file eslint-report.html
     - name: Upload ESLint report
       uses: actions/upload-artifact@v2
