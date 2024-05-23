@@ -44,7 +44,7 @@ jobs:
         npm run lint
 
   security:     # security audit
-    needs: code_integrity
+    needs: setup
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -74,7 +74,7 @@ jobs:
       run: trivy fs .
   
   test_selenium:
-    needs: security   # Selenium tests
+    needs: [security, code_integrity]   # Selenium tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
