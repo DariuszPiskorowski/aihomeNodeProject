@@ -44,7 +44,7 @@ jobs:
         npm run lint
 
   security:     # security audit
-    needs: unit_tests
+    needs: code_integrity
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
