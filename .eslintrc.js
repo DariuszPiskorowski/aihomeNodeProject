@@ -15,8 +15,8 @@ module.exports = {
         __dirname: 'readonly'
     },
     rules: {
-      indent: ['off'],
-      'linebreak-style': ['off'],
+      indent: ['warn',4],
+      'linebreak-style': ['warn', 'unix'],
       quotes: ['off'],
       semi: ['error', 'always'],
       'no-unused-vars': ['warn'],
