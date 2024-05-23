@@ -10,7 +10,7 @@ on:
     - cron: '0 0 * * 0' # weekly schedule on Sunday at 00:00
 
 jobs:           
-  code_integrity:   # linting
+  setup:   # linting
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -32,12 +32,27 @@ jobs:
 
     - name: Install dependencies
       run: npm install
-    - name: Set execute permission for node_modules/.bin/eslint
-      run: chmod +x node_modules/.bin/eslint
-    - name: Run ESLint
-      run: npm run lint
 
-  security:     # npm security audit
+  code_integrity:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3  
+    - name: Run ESLint
+      run: |
+        chmod +x node_modules/.bin/eslint
+        npm run lint
+
+  unit_tests:
+    needs: code_integrity
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run unit tests
+      run: npm test
+
+  security:     # security audit
+    needs: unit_tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -67,7 +82,7 @@ jobs:
       run: trivy fs .
   
   test_selenium:
-    needs: [code_integrity, security]  # Selenium tests
+    needs: security   # Selenium tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
