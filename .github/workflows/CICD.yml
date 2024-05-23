@@ -57,7 +57,7 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - namme: Provide execute permission for Mocha
+    - name: Provide execute permission for Mocha
       run: chmod +x node_modules/.bin/mocha
     
     - name: Run unit tests
