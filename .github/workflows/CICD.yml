@@ -48,7 +48,7 @@ jobs:
       run: |
         chmod +x node_modules/.bin/eslint
         #  npm run lint
-        node_modules/.bin/eslint aihomeNodeProject/ --format html --output-file eslint-report.html
+        node_modules/.bin/eslint web-server/ --format html --output-file eslint-report.html
     - name: Upload ESLint report
       uses: actions/upload-artifact@v2
       with:
