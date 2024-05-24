@@ -8,27 +8,27 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Fragment kodu odpowiedzialny za zarządzanie stanem urządzeń
+// code fragment responsible for managing device states
 const deviceStates = {};
 const deviceTimeouts = {};
 
-// Uwierzytelnianie Basic Auth dla HTTP
+// Basic Auth authentication for HTTP
 const authUsers = { 'admin': 'atu!3' };  // USER_LOGIN, USER_PASSWORD
 app.use(basicAuth({
     users: authUsers,
-    challenge: true,  // Powoduje wyskoczenie okna dialogowego do logowania
+    challenge: true,  // Causes a login dialog box to pop up
     realm: 'MQTTServer'
 }));
 
-// Opcje połączenia MQTT z uwierzytelnianiem
+// MQTT connection options with authentication
 const mqttOptions = {
     host: '192.168.111.1',
-    port: 1883, // Zwykle MQTT korzysta z portu 1883 bez szyfrowania, zmień jeśli używasz innego
+    port: 1883,    // Port MQTT
     username: 'admin',
     password: 'atu!3'
 };
 
-// Połączenie z serwerem MQTT
+// Connection to MQTT server
 const mqttClient = mqtt.connect(mqttOptions);
 
 mqttClient.on('connect', () => {
@@ -75,11 +75,11 @@ io.on('connection', (socket) => {
 
     socket.on('switchRelay', (data) => {
         const { device, id, action } = data;
-        // Przygotowanie tematu MQTT i wiadomości
+        // Preparing a topic MQTT and a message
         const topic = `${device}/Relay/${id}`;
         const message = action === 'on' ? 'on' : 'off';
 
-        // Publikacja do brokera MQTT
+        // Publication to broker MQTT
         mqttClient.publish(topic, message, {}, (err) => {
             if (err) {
                 console.log("Error publishing to MQTT:", err);
