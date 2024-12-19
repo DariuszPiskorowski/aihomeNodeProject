@@ -142,7 +142,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
-          
+
       - name: Build Docker images
         run: docker-compose -f docker-compose.yml build
 
@@ -169,8 +169,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: release-${{ github.sha }}
-          release_name: Release ${{ github.sha }}
+          name: Release ${{ github.sha }}
           draft: false
           prerelease: false
         env: 
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
