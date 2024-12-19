@@ -23,6 +23,10 @@
     "globals": "^15.2.0",
     "mocha": "^11.0.1"
   },
+  "overrides": {
+  "braces": "^3.0.3",
+  "cross-spawn": "^7.0.4"
+  },
   "author": "",
   "license": "ISC"
 }
