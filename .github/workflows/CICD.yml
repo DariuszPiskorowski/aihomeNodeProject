@@ -67,7 +67,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run security audit and fix
+      - name: Run security audit and fix --force
         run: npm audit --audit-level=moderate && npm audit fix
 
       - name: Install Trivy   # Trivy test for Docker images
