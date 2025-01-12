@@ -9,77 +9,82 @@ on:
   schedule:
     - cron: '0 0 * * 0' # weekly schedule on Sunday at 00:00
 
+permissions:
+  contents: write
+
 jobs:           
   setup:   # linting
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Node.js ver 20
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-    - name: Cache Node.js modules
-      uses: actions/cache@v2
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
+      - name: Set up Node.js ver 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
             ${{ runner.os }}-node-
 
-    - name: Check Node.js version
-      run: node --version
+      - name: Check Node.js version
+        run: node --version
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
   code_integrity:
     needs: setup
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3  
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-    - name: Install dependencies
-      run: npm install
-    - name: Run ESLint
-      run: |
-        chmod +x node_modules/.bin/eslint
-        npm run lint
+      - uses: actions/checkout@v3  
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install
+      - name: Run ESLint
+        run: |
+          chmod +x node_modules/.bin/eslint
+          npm run lint
 
   security:     # security audit
     needs: setup
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Cache Node.js modules
-      uses: actions/cache@v2
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-  
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-  
 
-    - name: Install dependencies
-      run: npm install
-    - name: Run security audit
-      run: npm audit --audit-level=moderate
-      run: npm audit fix
+      - name: Install dependencies
+        run: npm install
 
-    - name: Install Trivy   #  Trivy test for Docker images
-      run: |
-        sudo apt-get install -y wget apt-transport-https gnupg lsb-release
-        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-        echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
-        sudo apt-get update
-        sudo apt-get install trivy
+      - name: Run security audit and fix --force
+        run: npm audit --audit-level=moderate && npm audit fix
 
-    - name: Scan repository
-      run: trivy fs .
-  
+      - name: Install Trivy   # Trivy test for Docker images
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install trivy
+
+      - name: Scan repository
+        run: trivy fs .
+
   test_selenium:
     needs: [security, code_integrity]   # Selenium tests
     runs-on: ubuntu-latest
@@ -88,31 +93,30 @@ jobs:
         node-version: [20.x, 21.x, 22.x]
         browser: [chrome, firefox] # most popular browsers tests
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Cache Node.js modules
-      uses: actions/cache@v2
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
             ${{ runner.os }}-node-
 
-    - name: Install dependencies
-      run: npm install
-    - name: Install Selenium WebDriver
-      run: npm install selenium-webdriver
-    - name: Set up Selenium
-      run: |
-        curl -O https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
-        java -jar selenium-server-standalone-3.141.59.jar &
-    - name: Run Selenium tests
-      run: |
-        node selenium-tests.js ${{ matrix.browser }} 
+      - name: Install dependencies
+        run: npm install
+      - name: Install Selenium WebDriver
+        run: npm install selenium-webdriver
+      - name: Set up Selenium
+        run: |
+          curl -O https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
+          java -jar selenium-server-standalone-3.141.59.jar &
+      - name: Run Selenium tests
+        run: node selenium-tests.js ${{ matrix.browser }}
 
   deployment:
     needs: [code_integrity, security, test_selenium]
@@ -129,22 +133,24 @@ jobs:
 
       - name: Pull and Tag External Images
         run: |
-            docker pull eclipse-mosquitto
-            docker pull influxdb
-            docker tag influxdb sonixh/aihome:influxdb
-            docker tag eclipse-mosquitto sonixh/aihome:eclipse-mosquitto
+          docker pull eclipse-mosquitto
+          docker pull influxdb
+          docker tag influxdb sonixh/aihome:influxdb
+          docker tag eclipse-mosquitto sonixh/aihome:eclipse-mosquitto
       
       - name: Display files in working directory for debugging
         run: ls -alh
+
+      - name: Install docker-compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
 
       - name: Build Docker images
         run: docker-compose -f docker-compose.yml build
 
       - name: Display Docker images
         run: docker images
-
-#      - name: Login to DockerHub (again)  # just in case all jobs are take too long
-#        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker images
         run: |
@@ -158,16 +164,16 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
         
-    - name: Create Release
-      id: create_release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: release-${{ github.sha }}
-        release_name: Release ${{ github.sha }}
-        draft: false
-        prerelease: false
-      env: 
-        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: release-${{ github.sha }}
+          name: Release ${{ github.sha }}
+          draft: false
+          prerelease: false
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
