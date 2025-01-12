@@ -1,8 +1,12 @@
 {
   "dependencies": {
-    "express": "^4.20.0",
+snyk-fix-6d458f889e8bc23bb77a10e2b593361b
+    "express": "^4.21.0",
+
+    "express": "^4.21.0",
+ master
     "express-basic-auth": "^1.2.1",
-    "mqtt": "^5.6.0",
+    "mqtt": "^5.7.3",
     "socket.io": "^4.7.5"
   },
   "scripts": {
