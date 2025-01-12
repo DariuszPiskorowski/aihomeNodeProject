@@ -4,7 +4,11 @@
   "description": "Bridge between MQTT and InfluxDB",
   "main": "bridge.js",
   "dependencies": {
+ snyk-upgrade-9c2dae7fea1e21b34a07f2a121dc5f73
     "@influxdata/influxdb-client": "^1.35.0",
+
+    "@influxdata/influxdb-client": "^1.35.0",
+ master
     "mqtt": "^4.2.8"
   },
   "scripts": {
